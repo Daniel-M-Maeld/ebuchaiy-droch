@@ -1,0 +1,25 @@
+from decimal import *
+import math
+
+def f(l):
+    p = Decimal(math.atan(1/l)) - Decimal(l)*Decimal(l)
+    return p
+
+k = 0
+eps = Decimal(0.000000000000000005)
+a = Decimal(0.8)
+b = Decimal(1)
+
+
+while(True):
+    x0= (Decimal(0.5) * (a + b)) 
+    y = f(x0)
+    if y == 0 or (b-a) <= eps:
+        break
+    if f(a)*y < Decimal(0):
+        b = x0
+    else: 
+        a = x0
+    k+=1
+
+print(x0, k)
