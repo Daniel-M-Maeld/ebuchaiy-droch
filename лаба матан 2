@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 N = 50
 
-def fx(t, N_terms=500):
+def fx(t, N_terms=50):
     result = 3/4
     for n in range(1, N_terms+1):
         # Косинусный член
@@ -15,7 +15,7 @@ def fx(t, N_terms=500):
     return result
 
 # Создаем массив точек для построения графика
-t = np.linspace(0, 12, 1000)  # 3 периода по 3 единицы каждый
+t = np.linspace(0, 12, 1000) 
 y = np.array([fx(ti) for ti in t])
 
 # Построение графика
