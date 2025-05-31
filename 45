@@ -1,0 +1,52 @@
+CREATE TABLE Clients (
+     client_id SERIAL PRIMARY KEY,
+     full_name VARCHAR(100) NOT NULL,
+     phone VARCHAR(20) NOT NULL UNIQUE,
+     passport VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE Rentals (
+     rental_id SERIAL PRIMARY KEY,
+     client_id INTEGER REFERENCES Clients(client_id),
+     start_date TIMESTAMP NOT NULL,
+     end_date TIMESTAMP NOT NULL,
+     total_price DECIMAL(10, 2) NOT NULL,
+     company VARCHAR(100) 
+);
+
+CREATE TABLE Motorcycles (
+    bike_id SERIAL PRIMARY KEY,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('мотоцикл', 'скутер', 'квадроцикл')),
+    engine_volume DECIMAL(5, 2) NOT NULL,
+    year INTEGER NOT NULL,
+    power INTEGER NOT NULL,
+    mileage INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'available' CHECK (status IN ('available', 'rented', 'maintenance'))
+);
+
+
+CREATE TABLE Gear (
+    gear_id SERIAL PRIMARY KEY,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('шлем', 'мотоботы', 'комбинезон', 'перчатки', 'защита')),
+    brand VARCHAR(50) NOT NULL,
+    size VARCHAR(10) NOT NULL,
+    material VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'available' CHECK (status IN ('available', 'rented', 'maintenance'))
+);
+
+CREATE TABLE RentedGear (
+    id SERIAL PRIMARY KEY,
+    rental_id INTEGER REFERENCES Rentals(rental_id) ON DELETE CASCADE,
+    gear_id INTEGER REFERENCES Gear(gear_id),
+    UNIQUE (rental_id, gear_id)
+);
+
+
+CREATE TABLE RentedBikes (
+    id SERIAL PRIMARY KEY,
+    rental_id INTEGER REFERENCES Rentals(rental_id) ON DELETE CASCADE,
+    bike_id INTEGER REFERENCES Motorcycles(bike_id),
+    UNIQUE (rental_id, bike_id)
+);
