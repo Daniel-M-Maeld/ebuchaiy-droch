@@ -1,0 +1,84 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def z_function(x, y):
+    return 6*x*y - x**3 - y**3
+
+def gradient(x, y):
+    df_dx = 6*y - 3*x**2  # ∂z/∂x
+    df_dy = 6*x - 3*y**2  # ∂z/∂y
+    return np.array([df_dx, df_dy])
+
+def gradient_ascent(start_point, learning_rate=0.01, max_iter=1000, tolerance=1e-6):
+
+    current_point = np.array(start_point, dtype=float)
+    trajectory = [current_point.copy()] 
+    values = [z_function(current_point[0], current_point[1])]  
+    
+    for i in range(max_iter):
+
+        grad = gradient(current_point[0], current_point[1])
+        
+
+        new_point = current_point + learning_rate * grad
+        
+
+        trajectory.append(new_point.copy())
+        values.append(z_function(new_point[0], new_point[1]))
+
+        if np.linalg.norm(new_point - current_point) < tolerance:
+            print(f"Сходимость достигнута на итерации {i+1}")
+            break
+        
+        current_point = new_point
+
+    
+    return np.array(trajectory), np.array(values), i+1
+
+
+
+
+if __name__ == "__main__":
+
+    startPoints = [[0.0,0.0],[0.1,0.1],[2.0,1.0]]
+    len_start = len(startPoints)
+
+    fig = plt.figure(figsize=(len_start*5,5))
+    x = np.linspace(-2, 3, 150)
+    y = np.linspace(-2, 3, 150)
+    X, Y = np.meshgrid(x, y)
+    Z = z_function(X, Y)
+
+
+
+    for j in range(len_start):
+
+        start_time = time.time()
+
+        tr, z_tr, iter = gradient_ascent(startPoints[j])
+
+        end_time = time.time()  
+        execution_time = round(end_time - start_time, 4)
+
+        ax1 = fig.add_subplot(int(f"1{len_start}{j+1}"), projection='3d')
+        surf = ax1.plot_surface(X, Y, Z, cmap='viridis', alpha=0.8, 
+                            linewidth=0, antialiased=True)
+        len_tr =len(tr)
+
+        for i in range(len_tr-1):
+            px, py = tr[i][0], tr[i][1]
+            
+            ax1.scatter(px, py, z_tr[i], color='red', s=25)
+
+        ax1.scatter(tr[0][0], tr[0][1], z_tr[0], color='black', s=150, label=f'Начальная точка [{tr[0][0]:.1f}, {tr[0][1]:.1f}]')
+        ax1.scatter(tr[-1][0], tr[-1][1], z_tr[-1], color='green', s=150, label=f'Конечная точка [{tr[-1][0]:.1f}, {tr[-1][1]:.1f}], f = {z_tr[-1]:.1f}')
+        ax1.set_xlabel('X')
+        ax1.set_ylabel('Y')
+        ax1.set_zlabel('Z')
+        ax1.set_title(f'количество итераций: {iter}, время: {execution_time}')
+        ax1.legend()
+
+ 
+    plt.tight_layout()
+    plt.show()
